@@ -24,10 +24,25 @@
         }
     }
     &__user {
+        cursor: pointer;
         display: flex;
         justify-content: center;
         align-items: center;
         width: 80px;
         border-left: 0.5px solid $white;
+    }
+    &__dropdown {
+        color: $white;
+        background-color: $black;
+        width: 200px;
+        position: absolute;
+        right: 0;
+        top: 70px;
+        border-top: solid 1px $white;
+        .d-item {
+            height: 30px;
+            text-align: center;
+            cursor: pointer;
+        }
     }
 }
