@@ -9,15 +9,50 @@
         <b-field label="Password:">
             <b-input v-model="password" required></b-input>
         </b-field>
+        <div class="alert" v-if="isAlertActive">
+            Incorrect username or password
+        </div>
         <div class="button-container">
             <b-button @click="$router.push('/register')">SIGN UP</b-button>
-            <b-button>SIGN IN</b-button>
+            <b-button @click="login()">SIGN IN</b-button>
         </div>
     </LoginForm>
 </template>
 <script>
+import axios from 'axios';
 import LoginForm from '@/components/Form.vue'
+import { mapMutations, mapState } from 'vuex';
 export default {
+    data() {
+        return {
+            axios,
+            username: "",
+            password: "",
+            isAlertActive: false,
+        }
+    },
+    computed: {
+        ...mapState(["userInSession"])
+    },
+    methods: {
+        ...mapMutations(["setUser"]),
+        login() {
+            axios.post('http://localhost:6969/pilot/login', {
+                username: this.username,
+                password: this.password
+            }).then(res => {
+                if (Object.keys(res.data).length !== 0) {
+                    this.setUser(res.data);
+                    this.$router.push('/home');
+                } else {
+                    this.showAlert();
+                }
+            })
+        },
+        showAlert() {
+            this.isAlertActive = true;
+        }
+    },
     components: {
         LoginForm
     }

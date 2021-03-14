@@ -6,8 +6,16 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    userInSession: "",
+    usersArray: []
   },
   mutations: {
+    setUser(state, user) {
+      this.state.userInSession = user;
+    },
+    setUsersArray(state, data) {
+      this.state.usersArray = data;
+    }
   },
   actions: {
   },

@@ -1,19 +1,18 @@
 <template>
   <div class="home" >
-    <div class="d-container" v-if="false">
+    <div class="d-container" v-if="userInSession.isAdmin">
       <div class="d-container__header">
         <h2>Pilots</h2>
       </div>
       <div class="d-container__body">
-        <div class="d-card">
+        <div class="d-card" v-for="pilot in usersArray" :key="pilot.username">
           <div class="d-card__header">
-            <div class="d-title">El pepe</div>
+            <div class="d-title">{{ pilot.name }}</div>
             <div class="button-container">
-              <b-button>SHOW FLIGHTS</b-button>
               <b-button @click="$router.push('/create-flight')">ADD FLIGHT</b-button>
             </div>
           </div>
-          <div class="d-card__body" v-if="false">
+          <div class="d-card__body">
             <table>
               <thead>
                 <tr>
@@ -25,25 +24,11 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>Venezuela :v</td>
-                  <td>Santander</td>
-                  <td>12/2/2021 20:00</td>
-                  <td>13/2/2021 15:14</td>
-                  <td><b-icon pack="fas" icon="times" class="remove-icon"></b-icon></td>
-                </tr>
-                <tr>
-                  <td>Venezuela :v</td>
-                  <td>Santander</td>
-                  <td>12/2/2021 20:00</td>
-                  <td>13/2/2021 15:14</td>
-                  <td><b-icon pack="fas" icon="times" class="remove-icon"></b-icon></td>
-                </tr>
-                <tr>
-                  <td>Venezuela :v</td>
-                  <td>Santander</td>
-                  <td>12/2/2021 20:00</td>
-                  <td>13/2/2021 15:14</td>
+                <tr v-for="flight in pilot.flights" :key="flight.origin">
+                  <td>{{ flight.origin }}</td>
+                  <td>{{ flight.destination }}</td>
+                  <td>{{ flight.departureDate }}</td>
+                  <td>{{ flight.arriveDate }}</td>
                   <td><b-icon pack="fas" icon="times" class="remove-icon"></b-icon></td>
                 </tr>
               </tbody>
@@ -52,7 +37,7 @@
         </div>
       </div>
     </div>
-    <div class="d-container" v-if="true">
+    <div class="d-container" v-else>
       <div class="d-container__header">
         <h2>Welcom Capitan Acosta</h2>
       </div>
@@ -100,10 +85,28 @@
 </template>
 
 <script>
+import { mapMutations, mapState } from 'vuex'
+import axios from 'axios';
   export default {
     name: 'Home',
-    components: {
-
+    data() {
+      return {
+        axios
+      }
+    },
+    computed: {
+      ...mapState(["userInSession", "usersArray"])
+    },
+    beforeMount() {
+      if (this.userInSession.isAdmin) {
+        axios.get('http://localhost:6969/pilot/').then(res => {
+          this.setUsersArray(res.data.filter(el => !el.isAdmin));
+        })
+        console.log(this.$route.name);
+      }
+    },
+    methods: {
+      ...mapMutations(["setUsersArray"])
     }
   }
 </script>

@@ -4,7 +4,7 @@
              <b-icon pack="fas" icon="plane" class="navbar__icon"></b-icon>
              <h2>Pilot Manager</h2>
         </div>
-        <div class="navbar__user" @click="toggleDropdown()">
+        <div class="navbar__user" @click="toggleDropdown()" v-if="$route.name !== 'Login' && $route.name !== 'Register'">
             <b-icon pack="fas" icon="user" class="navbar__icon"></b-icon>
         </div>
         <div class="navbar__dropdown" v-if="isDropdownActive">
