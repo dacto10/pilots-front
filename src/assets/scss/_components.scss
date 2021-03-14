@@ -1,0 +1,36 @@
+.page {
+    margin: 75px 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form {
+    background-color: $white;
+    padding: 50px;
+    // height: 550px;
+    // border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    &__title {
+        text-align: center;
+        font-size: 22px;
+        color: $theme-primary;
+        font-weight: bold;
+    }
+    &--lg {
+        width: 700px;
+    }
+    &--md {
+        width: 550px;
+    }
+}
+
+.button-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
