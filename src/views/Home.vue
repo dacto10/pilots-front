@@ -9,13 +9,14 @@
           <div class="d-card__header">
             <div class="d-title">{{ pilot.name }}</div>
             <div class="button-container">
-              <b-button @click="$router.push('/create-flight')">ADD FLIGHT</b-button>
+              <b-button @click="addFlight(pilot)">ADD FLIGHT</b-button>
             </div>
           </div>
           <div class="d-card__body">
             <table>
               <thead>
                 <tr>
+                  <th>Airline</th>
                   <th>Origin</th>
                   <th>Destination</th>
                   <th>Departure Date</th>
@@ -25,11 +26,12 @@
               </thead>
               <tbody>
                 <tr v-for="flight in pilot.flights" :key="flight.origin">
+                  <td>{{ flight.airline }}</td>
                   <td>{{ flight.origin }}</td>
                   <td>{{ flight.destination }}</td>
                   <td>{{ flight.departureDate }}</td>
                   <td>{{ flight.arriveDate }}</td>
-                  <td><b-icon pack="fas" icon="times" class="remove-icon"></b-icon></td>
+                  <td @click="deleteFlight(pilot, flight)"><b-icon pack="fas" icon="times" class="remove-icon"></b-icon></td>
                 </tr>
               </tbody>
             </table>
@@ -98,15 +100,22 @@ import axios from 'axios';
       ...mapState(["userInSession", "usersArray"])
     },
     beforeMount() {
-      if (this.userInSession.isAdmin) {
-        axios.get('http://localhost:6969/pilot/').then(res => {
-          this.setUsersArray(res.data.filter(el => !el.isAdmin));
-        })
-        console.log(this.$route.name);
-      }
+      this.userInSession === "" && this.$router.push("/");
+      this.getData();
     },
     methods: {
-      ...mapMutations(["setUsersArray"])
+      ...mapMutations(["setUsersArray", "setSelectedPilot"]),
+      getData() {
+        this.userInSession.isAdmin && axios.get('http://localhost:6969/pilot/').then(res => this.setUsersArray(res.data.filter(el => !el.isAdmin)));
+      },
+      addFlight(pilot) {
+        this.setSelectedPilot(pilot);
+        this.$router.push('/create-flight');
+      },
+      deleteFlight(pilot, flight) {
+        pilot.flights = pilot.flights.filter(el => el !== flight);
+        axios.put(`http://localhost:6969/pilot/${pilot.username}`, pilot).then(() => this.getData()); 
+      }
     }
   }
 </script>

@@ -8,13 +8,14 @@
             <b-icon pack="fas" icon="user" class="navbar__icon"></b-icon>
         </div>
         <div class="navbar__dropdown" v-if="isDropdownActive">
-            <div class="d-item">
+            <div class="d-item" @click="logOut()">
                 Log out
             </div>
         </div>
     </div>
 </template>
 <script>
+import { mapMutations } from 'vuex';
 export default {
     data() {
         return {
@@ -22,8 +23,14 @@ export default {
         }
     },
     methods: {
+        ...mapMutations(["removeUser"]),
         toggleDropdown() {
             !this.isDropdownActive ? this.isDropdownActive = !this.isDropdownActive : this.isDropdownActive = false;
+        },
+        logOut() {
+            this.removeUser();
+            this.$router.push("/")
+            this.isDropdownActive = false;
         }
     }
 }

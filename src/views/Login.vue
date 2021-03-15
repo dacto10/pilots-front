@@ -7,7 +7,7 @@
             <b-input v-model="username" required></b-input>
         </b-field>
         <b-field label="Password:">
-            <b-input v-model="password" required></b-input>
+            <b-input v-model="password" required type="password"></b-input>
         </b-field>
         <div class="alert" v-if="isAlertActive">
             Incorrect username or password

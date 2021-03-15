@@ -7,7 +7,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     userInSession: "",
-    usersArray: []
+    usersArray: [],
+    selectedPilot: ""
   },
   mutations: {
     setUser(state, user) {
@@ -15,6 +16,12 @@ export default new Vuex.Store({
     },
     setUsersArray(state, data) {
       this.state.usersArray = data;
+    },
+    removeUser(state) {
+      this.state.userInSession = "";
+    },
+    setSelectedPilot(state, pilot) {
+      this.state.selectedPilot = pilot;
     }
   },
   actions: {

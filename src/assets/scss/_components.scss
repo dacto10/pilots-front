@@ -102,6 +102,7 @@
     background-color: $failure-light;
     border: solid 1px $failure-dark;
     color: $failure;
+    cursor: pointer;
     svg {
         padding-left: 1px;
     }
