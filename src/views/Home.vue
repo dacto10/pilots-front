@@ -2,20 +2,22 @@
   <div class="home" >
     <div class="d-container" v-if="userInSession.isAdmin">
       <div class="d-container__header">
-        <h2>Pilots</h2>
+        <h2>Welcome to the Pilots Manager</h2>
       </div>
       <div class="d-container__body">
         <div class="d-card" v-for="pilot in usersArray" :key="pilot.username">
           <div class="d-card__header">
-            <div class="d-title">{{ pilot.name }}</div>
+            <div class="d-title">{{ pilot.name.firstName }} {{ pilot.name.lastName }}</div>
             <div class="button-container">
               <b-button @click="addFlight(pilot)">ADD FLIGHT</b-button>
+              <b-button @click="deletePilot(pilot)" class="color-failure">DELETE PILOT</b-button>
             </div>
           </div>
           <div class="d-card__body">
             <table>
               <thead>
                 <tr>
+                  <th>Flight Id</th>
                   <th>Airline</th>
                   <th>Origin</th>
                   <th>Destination</th>
@@ -25,7 +27,8 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="flight in pilot.flights" :key="flight.origin">
+                <tr v-for="flight in pilot.flights" :key="flight.flightId">
+                  <td>{{ flight.flightId }}</td>
                   <td>{{ flight.airline }}</td>
                   <td>{{ flight.origin }}</td>
                   <td>{{ flight.destination }}</td>
@@ -41,7 +44,7 @@
     </div>
     <div class="d-container" v-else>
       <div class="d-container__header">
-        <h2>Welcom Capitan Acosta</h2>
+        <h2>Welcome {{userInSession.name.firstName}} {{userInSession.name.lastName}}</h2>
       </div>
       <div class="d-container__body">
         <div class="d-card">
@@ -52,6 +55,8 @@
             <table>
               <thead>
                 <tr>
+                  <th>Flight Id</th>
+                  <th>Airline</th>
                   <th>Origin</th>
                   <th>Destination</th>
                   <th>Departure Date</th>
@@ -59,23 +64,13 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>Venezuela :v</td>
-                  <td>Santander</td>
-                  <td>12/2/2021 20:00</td>
-                  <td>13/2/2021 15:14</td>
-                </tr>
-                <tr>
-                  <td>Venezuela :v</td>
-                  <td>Santander</td>
-                  <td>12/2/2021 20:00</td>
-                  <td>13/2/2021 15:14</td>
-                </tr>
-                <tr>
-                  <td>Venezuela :v</td>
-                  <td>Santander</td>
-                  <td>12/2/2021 20:00</td>
-                  <td>13/2/2021 15:14</td>
+                <tr v-for="flight in userInSession.flights" :key="flight.flightId">
+                  <td>{{flight.flightId}}</td>
+                  <td>{{flight.airline}}</td>
+                  <td>{{flight.origin}}</td>
+                  <td>{{flight.destination}}</td>
+                  <td>{{flight.departureDate}}</td>
+                  <td>{{flight.arriveDate}}</td>
                 </tr>
               </tbody>
             </table>
@@ -101,20 +96,39 @@ import axios from 'axios';
     },
     beforeMount() {
       this.userInSession === "" && this.$router.push("/");
-      this.getData();
+      this.userInSession.isAdmin && this.getData();
     },
     methods: {
-      ...mapMutations(["setUsersArray", "setSelectedPilot"]),
-      getData() {
-        this.userInSession.isAdmin && axios.get('http://localhost:6969/pilot/').then(res => this.setUsersArray(res.data.filter(el => !el.isAdmin)));
+      ...mapMutations(["setUsersArray", "setSelectedPilot", "setFlights"]),
+      async getData() {
+        const {data} = await axios.get('http://localhost:6969/pilot/');
+        const users = data.map(el => ({
+          username: el.username,
+          password: el.password,
+          isAdmin: el.isAdmin,
+          birthDate: el.birthDate,
+          name: el.name,
+          flights: el.flights
+        })).filter(el => !el.isAdmin);
+        users.forEach(async (el, index) => {
+          const {data} = await axios.post(`http://localhost:6969/flight/all`, {
+            flights: el.flights
+          });
+          el.flights = data;
+        })
+        this.setUsersArray(users)
       },
       addFlight(pilot) {
         this.setSelectedPilot(pilot);
         this.$router.push('/create-flight');
       },
-      deleteFlight(pilot, flight) {
-        pilot.flights = pilot.flights.filter(el => el !== flight);
-        axios.put(`http://localhost:6969/pilot/${pilot.username}`, pilot).then(() => this.getData()); 
+      async deleteFlight(pilot, flight) {
+        const {data} = await axios.delete(`http://localhost:6969/flight/${flight.flightId}`);
+        await axios.put(`http://localhost:6969/pilot/remove/${pilot.username}/${data}`);
+        this.getData();
+      },
+      deletePilot(pilot) {
+        axios.delete(`http://localhost:6969/pilot/${pilot.username}`).then(() => this.getData());
       }
     }
   }

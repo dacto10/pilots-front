@@ -35,7 +35,7 @@
 }
 
 .d-container {
-    width: 1000px;
+    width: 1200px;
     &__header {
         text-align: center;
         font-size: 22px;
@@ -108,6 +108,15 @@
     }
 }
 
+.color-failure {
+    border-color: $failure-dark!important;
+    color: $failure!important;
+}
+.color-failure:hover {
+    color: $black!important;
+    border-color: $failure-dark!important;
+    box-shadow: 0 0 0 0.125em $failure-light!important;
+}
 .alert {
     color: $failure;
 }

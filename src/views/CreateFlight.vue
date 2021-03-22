@@ -3,6 +3,9 @@
         <div class="form__title">
             <span>Add Flight</span>
         </div>
+        <b-field label="Flight Id:">
+            <b-input v-model="flight.flightId" required></b-input>
+        </b-field>
         <b-field label="Airline:">
             <b-input v-model="flight.airline" required></b-input>
         </b-field>
@@ -13,10 +16,10 @@
             <b-input v-model="flight.destination" required></b-input>
         </b-field>
         <b-field label="Departure Date:">
-            <b-input v-model="flight.departureDate" required></b-input>
+            <b-datetimepicker v-model="flight.departureDate" placeholder="Click to select.." />
         </b-field>
         <b-field label="Arrive Date:">
-            <b-input v-model="flight.arriveDate" required></b-input>
+            <b-datetimepicker v-model="flight.arriveDate" placeholder="Click to select.." />
         </b-field>
         <div class="button-container">
             <b-button @click="$router.push('/home')">GO BACK</b-button>
@@ -25,40 +28,43 @@
     </Form>
 </template>
 <script>
-import Form from '@/components/Form.vue'
-import { mapState } from 'vuex'
-import axios from 'axios';
-export default {
-    data() {
-        return {
-            flight: {
-                airline: "",
-                origin: "",
-                destination: "",
-                departureDate: "",
-                arriveDate: ""
+    import Form from '@/components/Form.vue'
+    import {
+        mapState
+    } from 'vuex'
+    import axios from 'axios';
+    export default {
+        data() {
+            return {
+                flight: {
+                    flightId: "",
+                    airline: "",
+                    origin: "",
+                    destination: "",
+                    departureDate: new Date(),
+                    arriveDate: new Date()
+                },
+
             }
-        }
-    },
-    components: {
-        Form
-    },
-    computed: {
-        ...mapState(["selectedPilot"])
-    },
-    methods: {
-        createFlight() {
-            this.selectedPilot.flights.push(this.flight);
-            axios.put(`http://localhost:6969/pilot/${this.selectedPilot.username}`, this.selectedPilot).then(() => {
+        },
+        components: {
+            Form
+        },
+        computed: {
+            ...mapState(["selectedPilot"])
+        },
+        methods: {
+             async createFlight() {
+                const {data} = await axios.post(`http://localhost:6969/flight`, this.flight);
+                await axios.put(`http://localhost:6969/pilot/${this.selectedPilot.username}/${data}`);
                 this.flight = {
                     airline: "",
                     origin: "",
                     destination: "",
-                    departureDate: "",
-                    arriveDate: ""
+                    departureDate: new Date(),
+                    arriveDate: new Date()
                 }
-            });
+            }
         }
     }
-}
 </script>

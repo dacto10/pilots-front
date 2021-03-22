@@ -19,6 +19,8 @@ export default new Vuex.Store({
     },
     removeUser(state) {
       this.state.userInSession = "";
+      this.state.usersArray.length = 0;
+      this.state.selectedPilot = "";
     },
     setSelectedPilot(state, pilot) {
       this.state.selectedPilot = pilot;
